@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>niXZan - Pokémons</title>
+</head>
+<body>
+    <div>
+        <h1>niXZan - Pokémons</h1>
+        <div style="display: flex; gap: 5px;">
+            <input id="pokemonEscrito" type="text" placeholder="Ex.: pikachu ou 25" style="height: 40px;">
+            <button onclick="buscar()" style="height: 40px;">Buscar</button>
+        </div>
+        <div id="resultadoPokemon" class="hidden">
+            <h2>Resultado:</h2>
+            <p id="pokemonName"></p>
+            <p id="pokemonHeight"></p>
+            <p id="pokemonWeight"></p>
+            <p id="pokemonTypes"></p>
+            <div id="pokeContainer">
+                <img id="pokemonImage" src="" alt="Imagem do Pokémon" style="width: 200px; height: 200px;"/>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    async function buscar() {
+        const pokemonEscrito = document.getElementById('pokemonEscrito').value;
+        if (!pokemonEscrito) {
+            alert('Por favor, insira um Pokémon que existe.');
+            return;
+        }
+
+        const response = await fetch('/poke', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome: pokemonEscrito })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+
+            const pokemonData = data.pokeApiPoke;
+
+            // Mostra os dados do Pokémon no HTML
+            document.getElementById('pokemonName').textContent = `Nome: ${pokemonData.name}`;
+            document.getElementById('pokemonHeight').textContent = `Altura: ${pokemonData.height} decímetros`;
+            document.getElementById('pokemonWeight').textContent = `Peso: ${pokemonData.weight} hectogramas`;
+            document.getElementById('pokemonTypes').textContent = `Tipos: ${pokemonData.types}`;
+
+            // Exibe a imagem do Pokémon
+            document.getElementById('pokemonImage').src = pokemonData.image;
+
+            // Exibe a área de resultado
+            document.getElementById('resultadoPokemon').classList.remove('hidden');
+        } else {
+            alert('Erro ao encontrar Pokémon!');
+        }
+    }
+    </script>
+</body> 
+</html>
